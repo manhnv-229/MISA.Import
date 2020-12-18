@@ -1,0 +1,8 @@
+﻿.border-red{
+    border: 1px solid #ff0000 !important;
+}
+
+    .border-red + a.m-combobox-trigger {
+        border: 1px solid #ff0000 !important;
+        color:#ff0000;
+    }

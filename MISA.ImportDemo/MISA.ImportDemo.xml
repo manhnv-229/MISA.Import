@@ -1,0 +1,191 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>MISA.ImportDemo</name>
+    </assembly>
+    <members>
+        <member name="T:MISA.ImportDemo.Controllers.BaseEntityController`1">
+            <summary>
+            Class Base
+            </summary>
+            <typeparam name="T"></typeparam>
+            CreateBy: NVMANH (20/04/2020)
+        </member>
+        <member name="F:MISA.ImportDemo.Controllers.BaseEntityController`1._baseEntityService">
+            <summary>
+            Interface reference tới BaseEntityService
+            </summary>
+        </member>
+        <member name="M:MISA.ImportDemo.Controllers.BaseEntityController`1.#ctor(MISA.ImportDemo.Core.Interfaces.IBaseEntityService{`0})">
+            <summary>
+            Khởi tạo service chung
+            </summary>
+            <param name="baseEntityService"></param>
+            CreateBy: NVMANH (20/04/2020)
+        </member>
+        <member name="M:MISA.ImportDemo.Controllers.BaseEntityController`1.GetEntities">
+            <summary>
+            Lấy toàn bộ danh sách đối tượng
+            </summary>
+            <returns></returns>
+            CreatedBy: NVMANH (14/04/2020)
+        </member>
+        <member name="M:MISA.ImportDemo.Controllers.BaseEntityController`1.GetEntityByID(System.String)">
+            <summary>
+            Lấy thông tin theo mã (khóa chính)
+            </summary>
+            <param name="id">giá trị khóa chính trong bảng CSDL</param>
+            <returns></returns>
+            CreateBy: NVMANH (20/04/2020)
+        </member>
+        <member name="M:MISA.ImportDemo.Controllers.BaseEntityController`1.Post(`0)">
+            <summary>
+            Thêm mới
+            </summary>
+            <param name="entity">Đối tượng thêm mới</param>
+            <returns></returns>
+            CreateBy: NVMANH (20/04/2020)
+        </member>
+        <member name="M:MISA.ImportDemo.Controllers.BaseEntityController`1.Post(System.Collections.Generic.List{`0})">
+            <summary>
+            Thêm List Object
+            </summary>
+            <param name="entities">List các object</param>
+            <returns></returns>
+            CreatedBy: NVMANH (22/05/2020)
+        </member>
+        <member name="M:MISA.ImportDemo.Controllers.BaseEntityController`1.Put(`0)">
+            <summary>
+            Cập nhật
+            </summary>
+            <param name="entity">Đối tượng sửa</param>
+            <returns></returns>
+            CreateBy: NVMANH (20/04/2020)
+        </member>
+        <member name="M:MISA.ImportDemo.Controllers.BaseEntityController`1.Delete(System.Object)">
+            <summary>
+            Xóa theo ID
+            </summary>
+            <param name="id">id của đối tượng</param>
+            <returns></returns>
+            CreateBy: NVMANH (20/04/2020)
+        </member>
+        <member name="M:MISA.ImportDemo.Controllers.ImportEmployeesController.UploadImportFile(Microsoft.AspNetCore.Http.IFormFile,System.Threading.CancellationToken)">
+            <summary>
+            Api thực hiện việc đọc và phân loại dữ liệu từ file Excel - hồ sơ lao động
+            </summary>
+            <param name="fileImport"></param>
+            <param name="cancellationToken"></param>
+            <returns></returns>
+            CreatedBy: NVMANH(05/2020)
+        </member>
+        <member name="M:MISA.ImportDemo.Controllers.ImportEmployeesController.Post(System.String,System.Boolean,System.Threading.CancellationToken)">
+            <summary>
+            Thực hiện nhập khẩu dữ liệu
+            </summary>
+            <param name="keyImport"></param>
+            <param name="cancellationToken"></param>
+            <param name="overriderData">Ghi đè dữ liệu hay không (true-có ghi đè)</param>
+            <returns></returns>
+        </member>
+        <member name="T:MISA.ImportDemo.Interfaces.IOrganizationService">
+            <summary>
+            Interface quản lý nghiệp vụ đơn vị
+            </summary>
+            CreatedBy: 
+        </member>
+        <member name="M:MISA.ImportDemo.Interfaces.IOrganizationService.GetOrganizationByOrganizationCode(System.String)">
+            <summary>
+            Hàm thực hiện lấy thông tin đơn vị theo mã đơn vị
+            </summary>
+            <param name="organizationCode">mã đơn vị</param>
+            <returns></returns>
+            ntngoc - 25/04/2020
+        </member>
+        <member name="M:MISA.ImportDemo.Interfaces.IOrganizationService.InsertOrganizationAndReturnSingleValue(MISA.ImportDemo.Core.Entities.Organization)">
+            <summary>
+            
+            </summary>
+            <param name="entity"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MISA.ImportDemo.Interfaces.IOrganizationService.UpdateOrganization(MISA.ImportDemo.Core.Entities.Organization)">
+            <summary>
+            
+            </summary>
+            <param name="entity"></param>
+            <returns></returns>
+        </member>
+        <member name="T:MISA.ImportDemo.Middleware.ErrorHandlingMiddleware">
+            <summary>
+            Xử lý khi có exception xảy ra
+            </summary>
+            CreatedBy: NVMANH (05/2020)
+        </member>
+        <member name="M:MISA.ImportDemo.Middleware.ErrorHandlingMiddleware.HandleRequest(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            Hàm xử lý các Request được gửi lên
+            1. Check xem có truyền thông tin đơn vị lên hay không? Chặn mọi Request không gửi hoặc gửi sai
+            </summary>
+            <param name="context"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MISA.ImportDemo.Middleware.ErrorHandlingMiddleware.HandleRequestWhenAuthenticationSuccess(Microsoft.AspNetCore.Http.HttpContext,System.Guid)">
+            <summary>
+            Xử lý request khi xác thực thông tin đầy đủ
+            </summary>
+            <param name="context"></param>
+            <param name="orgId"></param>
+        </member>
+        <member name="M:MISA.ImportDemo.Middleware.ErrorHandlingMiddleware.HandleRequestHasNotAuthentication(Microsoft.AspNetCore.Http.HttpContext)">
+            <summary>
+            Xử lý khi thông tin xác thực không hợp lệ
+            </summary>
+            <param name="context"></param>
+            <returns></returns>
+            CreatedBy: NVMANH (02/07/2020)
+        </member>
+        <member name="M:MISA.ImportDemo.Middleware.ErrorHandlingMiddleware.HandleExceptionAsync(Microsoft.AspNetCore.Http.HttpContext,System.Exception)">
+            <summary>
+            Xử lý khi chương trình có Exception xảy ra
+            </summary>
+            <param name="context"></param>
+            <param name="ex"></param>
+            <returns></returns>
+            CreatedBy: NVMANH (01/07/2020)
+        </member>
+        <member name="T:MISA.ImportDemo.Services.OrganizationService">
+            <summary>
+            Service cơ quan bảo hiểm xã hội
+            </summary>
+            CreatedBy: NVMANH (20/04/2020)
+        </member>
+        <member name="M:MISA.ImportDemo.Services.OrganizationService.#ctor(MISA.ImportDemo.Core.Interfaces.IOrganizationRepository)">
+            <summary>
+            
+            </summary>
+            <param name="organizationRepository"></param>
+        </member>
+        <member name="M:MISA.ImportDemo.Services.OrganizationService.GetOrganizationByOrganizationCode(System.String)">
+            <summary>
+            
+            </summary>
+            <param name="organizationCode"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MISA.ImportDemo.Services.OrganizationService.InsertOrganizationAndReturnSingleValue(MISA.ImportDemo.Core.Entities.Organization)">
+            <summary>
+            
+            </summary>
+            <param name="entity"></param>
+            <returns></returns>
+        </member>
+        <member name="M:MISA.ImportDemo.Services.OrganizationService.UpdateOrganization(MISA.ImportDemo.Core.Entities.Organization)">
+            <summary>
+            
+            </summary>
+            <param name="entity"></param>
+            <returns></returns>
+        </member>
+    </members>
+</doc>
