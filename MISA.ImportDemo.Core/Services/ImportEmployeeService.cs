@@ -18,18 +18,42 @@ using System.Threading.Tasks;
 
 namespace MISA.ImportDemo.Core.Services
 {
+    /// <summary>
+    /// Service xử lý việc nhập khẩu nhân viên
+    /// </summary>
+    /// CreatedBy: NVMANH (10/10/2020)
     public class ImportEmployeeService : BaseImportService, IImportEmployeeService
     {
+        #region DECLARE
+        #endregion
+        #region CONSTRUCTOR
         public ImportEmployeeService(IImportEmployeeRepository importRepository, IMemoryCache importMemoryCache) : base(importRepository, importMemoryCache, "Employee")
         {
             //EntitiesFromDatabase = GetListProfileBookDetailsByProfileBookId().Cast<object>().ToList();
         }
+        #endregion
 
+        #region METHOD
+        /// <summary>
+        /// Thực hiện nhập khẩu dữ liệu
+        /// </summary>
+        /// <param name="keyImport">Key xác định lấy dữ liệu để nhập khẩu từ cache</param>
+        /// <param name="overriderData">Có cho phép ghi đè hay không (true- ghi đè dữ liệu trùng lặp trong db)</param>
+        /// <param name="cancellationToken">Tham số tùy chọn xử lý đa luồng (hiện tại chưa sử dụng)</param>
+        /// <returns>ActionServiceResult(với các thông tin tương ứng tùy thuộc kết nhập khẩu)</returns>
+        /// CreatedBy: NVMANH (10/10/2020)
         public async Task<ActionServiceResult> Import(string keyImport, bool overriderData, CancellationToken cancellationToken)
         {
             return await _importRepository.Import(keyImport, overriderData, cancellationToken);
         }
 
+        /// <summary>
+        /// Thực hiện đọc dữ liệu từ tệp nhập khẩu
+        /// </summary>
+        /// <param name="importFile">Tệp nhập khẩu</param>
+        /// <param name="cancellationToken">Tham số tùy chọn sử dụng xử lý Task đa luồng</param>
+        /// <returns>ActionServiceResult(với các thông tin tương ứng tùy thuộc kết quả đọc tệp)</returns>
+        /// CreatedBy: NVMANH (10/10/2020)
         public async Task<ActionServiceResult> ReadEmployeeDataFromExcel(IFormFile importFile, CancellationToken cancellationToken)
         {
             // Lấy dữ liệu nhân viên trên Db về để thực hiện check trùng:
@@ -39,19 +63,18 @@ namespace MISA.ImportDemo.Core.Services
             // Lưu dữ liệu vào cache:
             importMemoryCache.Set(importInfo.ImportKey, employees);
             // Lưu các vị trí mới vào cache:
-            importMemoryCache.Set(string.Format("Position_{0}",importInfo.ImportKey), _newPossitons);
+            importMemoryCache.Set(string.Format("Position_{0}", importInfo.ImportKey), _newPossitons);
             return new ActionServiceResult(true, Resources.Msg_ImportFileReadSuccess, MISACode.Success, importInfo);
         }
 
         /// <summary>
-        ///  Lấy dữ liệu chi tiết các hồ sơ (ProfileBookDetail) đã có trong Database tương ứng 
+        ///  Lấy toàn bộ danh sách Nhân viên đang có trong Database theo từng công ty.
         ///  với bộ hồ sơ (ProfileBook) đang nhập khẩu vào - lưu vào cache để thực hiện check trùng
         /// </summary>
         /// CreatedBy: NVMANH (02/06/2020)
         private async Task<List<Employee>> GetEmployeesFromDatabase()
         {
             var importRepository = _importRepository as IImportEmployeeRepository;
-            //ISpecification<ProfileBookDetail> spec = new ProfileBookDetailSpecification(_profileBookId);
             return await importRepository.GetEmployees();
 
         }
@@ -59,11 +82,11 @@ namespace MISA.ImportDemo.Core.Services
         /// <summary>
         /// Check trùng dữ liệu trong File Excel và trong database, dựa vào số chứng minh thư
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="entitiesInFile"></param>
-        /// <param name="entity"></param>
-        /// <param name="cellValue"></param>
-        /// <param name="importColumn"></param>
+        /// <typeparam name="T">Generic Type</typeparam>
+        /// <param name="entitiesInFile">Danh sách các đối tượng được build từ tệp nhập khẩu</param>
+        /// <param name="entity">thực thể hiện tại</param>
+        /// <param name="cellValue">Giá trị nhập trong ô excel đang đọc</param>
+        /// <param name="importColumn">Thông tin cột nhập khẩu (tiêu đề cột, kiểu giá trị....)</param>
         /// CreatedBy: NVMANH (19/06/2020)
         protected override void CheckDuplicateData<T>(List<T> entitiesInFile, T entity, object cellValue, ImportColumn importColumn)
         {
@@ -100,6 +123,14 @@ namespace MISA.ImportDemo.Core.Services
                 base.CheckDuplicateData(entitiesInFile, entity, cellValue, importColumn);
             }
         }
+
+        /// <summary>
+        /// Khởi tạo đối tượng trước khi build các thông tin
+        /// Dựa vào thông tin bảng dữ liệu sẽ import dữ liệu vào mà map các đối tượng tương ứng.
+        /// </summary>
+        /// <typeparam name="T">Kiểu của object</typeparam>
+        /// <returns>Thực thể được khởi tạo với kiểu tương ứng</returns>
+        /// OverriderBy: NVMANH (15/12/2020)
         protected override dynamic InstanceEntityBeforeMappingData<T>()
         {
             var ImportToTable = ImportWorksheetTemplate.ImportToTable;
@@ -120,6 +151,14 @@ namespace MISA.ImportDemo.Core.Services
             }
         }
 
+        /// <summary>
+        /// Sau khi các thông tin được build hoàn chỉnh thì làm một số việc cần thiết
+        /// 1. Mapping dữ liệu thông tin thành viên gia đình tương ứng với nhân viên nào
+        /// 2. Validate có lỗi gì cụ thể
+        /// </summary>
+        /// <typeparam name="T">kiểu của object</typeparam>
+        /// <param name="entity">object thành viên trong gia đình</param>
+        /// OverriderBy: NVMANH (15/12/2020)
         protected override void ProcessDataAfterBuild<T>(object entity)
         {
             if (entity is EmployeeFamily)
@@ -146,6 +185,14 @@ namespace MISA.ImportDemo.Core.Services
             base.ProcessDataAfterBuild<T>(entity);
         }
 
+        /// <summary>
+        /// Xử lý đặc thù với các thông tin lấy trên tệp nhập khẩu ở dạng lựa chọn thông tin ở 1 danh mục trong database
+        /// </summary>
+        /// <typeparam name="T">kiểu của thực thể đang build</typeparam>
+        /// <param name="entity">thực thể</param>
+        /// <param name="cellValue">giá trị của cell đọc được trên tệp</param>
+        /// <param name="importColumn">thông tin cột nhập khẩu hiện tại được khai báo trong databse</param>
+        /// OverriderBy: NVMANH (15/12/2020)
         protected override void ProcessCellValueByDataTypeWhenTableReference<T>(object entity, ref object cellValue, ImportColumn importColumn)
         {
             var value = cellValue;
@@ -164,7 +211,15 @@ namespace MISA.ImportDemo.Core.Services
             }
         }
 
-
+        /// <summary>
+        /// Xử lý đặc thù với các thông tin lấy trên tệp nhập khẩu ở dạng lựa chọn thông tin lưu trữ có kiểu là Enum (VD giới tính, tình trạng hôn nhân...)
+        /// </summary>
+        /// <typeparam name="T">kiểu của thực thể đang build</typeparam>
+        /// <param name="entity">thực thể</param>
+        /// <param name="enumType">Kiểu của enum</param>
+        /// <param name="cellValue">giá trị của cell đọc được trên tệp</param>
+        /// <param name="importColumn">thông tin cột nhập khẩu hiện tại được khai báo trong databse</param>
+        /// OverriderBy: NVMANH (15/12/2020)
         protected override void CustomAfterSetCellValueByColumnInsertWhenEnumReference<Y>(object entity, Y enumType, string columnInsert, ref object cellValue)
         {
             if (columnInsert == "ResidentialAreaType")
@@ -177,11 +232,20 @@ namespace MISA.ImportDemo.Core.Services
             {
                 base.CustomAfterSetCellValueByColumnInsertWhenEnumReference<Y>(entity, enumType, columnInsert, ref cellValue);
             }
-            
+
         }
 
+        /// <summary>
+        /// Sau khi xử lý dữ liệu với các giá trị được chọn trong 1 danh mục ở Database thì tùy chỉnh lại nếu có nhu cầu
+        /// </summary>
+        /// <typeparam name="Y">Kiểu của đối tượng</typeparam>
+        /// <param name="entity">thực thể đang build từ 1 dòng trong file excel</param>
+        /// <param name="columnInsert">Thông tin cột đang nhập khẩu</param>
+        /// <param name="cellValue">Giá trị ô trong file excel đang đọc được</param>
+        /// CreatedBy: NVMANH (12/12/2020)
         protected override void CustomAfterSetCellValueByColumnInsertWhenTableReference<Y>(object entity, Y objectReference, string columnInsert, ref object cellValue)
         {
+            // Gán lại chính xác thông tin liên hệ của thành viên có mối quan hệ là gì?
             if (objectReference is Relation && entity is EmployeeFamily)
             {
                 var pfd = entity as EmployeeFamily;
@@ -192,14 +256,14 @@ namespace MISA.ImportDemo.Core.Services
         }
 
         /// <summary>
-        /// Xử lý dữ liệu đặc thù đối với ngày sinh (thông tin thành viên trong gia đình)
+        /// Xử lý dữ liệu liên quan đến ngày/ tháng
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="entity"></param>
-        /// <param name="cellValue"></param>
-        /// <param name="type"></param>
-        /// <param name="importColumn"></param>
-        /// <returns></returns>
+        /// <param name="entity">Thực thế sẽ import vào Db</param>
+        /// <param name="cellValue">Giá trị của cell</param>
+        /// <param name="type">Kiểu dữ liệu</param>
+        /// <param name="importColumn">Thông tin cột import được khai báo trong Db</param>
+        /// <returns>giá trị ngày tháng được chuyển đổi tương ứng</returns>
+        /// CreatedBy: NVMANH (25/05/2020)
         protected override DateTime? GetProcessDateTimeValue<T>(T entity, object cellValue, Type type, ImportColumn importColumn = null)
         {
             if (entity is EmployeeFamily && importColumn.ColumnInsert == "DateOfBirth")
@@ -249,5 +313,6 @@ namespace MISA.ImportDemo.Core.Services
             else
                 return base.GetProcessDateTimeValue(entity, cellValue, type, importColumn);
         }
+        #endregion
     }
 }

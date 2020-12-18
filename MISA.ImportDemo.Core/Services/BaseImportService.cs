@@ -25,6 +25,7 @@ namespace MISA.ImportDemo.Core.Services
 {
     public class BaseImportService : BaseEntityService<ImportFileTemplate>
     {
+        #region DECLARE
         protected IBaseImportRepository _importRepository;
         protected IMemoryCache importMemoryCache;
         protected List<Nationality> Nationalities;
@@ -41,6 +42,9 @@ namespace MISA.ImportDemo.Core.Services
         protected readonly Organization CurrentOrganization;
         protected List<Position> _newPossitons = new List<Position>();
 
+        #endregion
+
+        #region CONSTRUCTOR
         public BaseImportService(IBaseImportRepository importRepository, IMemoryCache importMemoryCache, string tableToImport) : base(importRepository)
         {
             _importRepository = importRepository;
@@ -56,6 +60,9 @@ namespace MISA.ImportDemo.Core.Services
             CurrentOrganization = _importRepository.GetCurrentOrganization();
         }
 
+        #endregion
+
+        #region METHOD
         /// <summary>
         /// Đọc dữ liệu từ tệp nhập khẩu.
         /// </summary>
@@ -93,31 +100,36 @@ namespace MISA.ImportDemo.Core.Services
         /// <summary>
         /// Thực hiện build dữ liệu nhập khẩu.
         /// </summary>
-        /// <param name="excelPackage"></param>
+        /// <param name="excelPackage">Phạm vi chứa dữ liệu của file Excel</param>
         /// <param name="importFileTemplate">Đối tượng chứa thông tin file mẫu nhập khẩu được khai báo trong Database</param>
-        /// <returns></returns>
+        /// <returns>Danh sách các đối tượng được build từ File Excel</returns>
         /// CreatedBy: NVMANH (20/05/2020)
         public List<object> BuildListDataFromExcel<T>(ExcelPackage excelPackage, ImportFileTemplate importFileTemplate) where T : BaseEntity
         {
 
             var worksheets = excelPackage.Workbook.Worksheets;
             var workSheetCount = worksheets.Count;
-
+            // Duyệt từng sheet nhé 
+            // - mỗi sheet sẽ được khai báo tương ứng trong database gồm các thông tin: sheet này sẽ mapping với object nào, bảng sẽ lưu dữ liệu là gì...
             for (int i = 0; i < workSheetCount; i++)
             {
                 Worksheet = worksheets[i];
                 var sheetName = Worksheet.Name;
+
+                // Vả vào mồm người dùng nếu tệp không đúng là tệp mẫu: Tệp mẫu của MISA cấp luôn có ít nhất 1 sheet và phải có khai báo các thông tin - tức là không được phép null.
                 if (Worksheet.Dimension == null)
                     throw new ImportException(string.Format(Resources.Error_ImportFile_NotMatchTemplate));
 
                 var totalColumns = Worksheet.Dimension.Columns;
 
-                // Check xem Worksheet trên tệp có giống File mẫu hay không?
+                // Check xem Worksheet trên tệp có giống File mẫu hay không? Không có lại vả tiếp
                 ImportWorksheetTemplate = importFileTemplate.ImportWorksheet.Where(e => e.ImportWorksheetName.Trim().ToLower() == sheetName.Trim().ToLower() || e.WorksheetPosition == i + 1).FirstOrDefault();
 
+                // Bỏ qua các sheet ẩn và các sheet được khai báo là không nhập khẩu:
                 if (ImportWorksheetTemplate == null || Worksheet.Hidden == OfficeOpenXml.eWorkSheetHidden.Hidden || (ImportWorksheetTemplate != null && ImportWorksheetTemplate.IsImport == 0))
                     continue;
 
+                // Bảng dữ liệu trong database được khai báo sẽ lưu trữ đối tượng là gì? nếu không khai báo thì bỏ qua nốt.
                 TableToImport = ImportWorksheetTemplate.ImportToTable;
                 if (string.IsNullOrEmpty(TableToImport))
                     continue;
@@ -126,11 +138,12 @@ namespace MISA.ImportDemo.Core.Services
                 //Guard.Against.WorksheetInValid(worksheetTemplate, sheetName, i);
 
                 // Check số lượng cột trong workSheet có giống với số lượng cột tại worksheet như tệp mẫu hay không?
+                // Không giống tức là không đúng mẫu - vả lỗi vào mồm!
                 var listColumnsTemplate = ImportWorksheetTemplate.ImportColumn;
                 if (totalColumns != listColumnsTemplate.Count())
                     throw new ImportException(String.Format(Resources.Error_ImportFileWorksheetPossitionInvalid, listColumnsTemplate.Count(), sheetName));
 
-                // For từng cột [xá định là tiêu đề], kiểm tra tiêu đề cột có khớp hay không:
+                // For từng cột [xác định là tiêu đề], kiểm tra tiêu đề cột có khớp hay không - không khớp tức là cột linh tinh không đúng mẫu - ném lỗi vào mồm:
                 var rangeHeader = Worksheet.Cells[1, 1, 1, totalColumns];
                 for (int j = 1; j < totalColumns; j++)
                 {
@@ -162,7 +175,23 @@ namespace MISA.ImportDemo.Core.Services
             return _entitiesFromEXCEL;
         }
 
-        //TODO: Set OrgID in import:
+        /// <summary>
+        /// Thực hiện khởi tạo các giá trị cần thiết trước khi mapping dữ liệu (VD: gán ID của master)
+        /// Hàm này cho phép overrider lại với mục định khởi tạo động được object với kiểu bất kỳ khi có nhu cầu.
+        /// </summary>
+        /// <typeparam name="T">Kiểu của đối tượng (VD: Employee)</typeparam>
+        /// <returns>Một object cụ thể bao gồm các thông tin mặc định</returns>
+        /// CreatedBy: NVMANH (12/12/2020)
+        protected virtual dynamic InstanceEntityBeforeMappingData<T>() where T : BaseEntity
+        {
+            return Activator.CreateInstance<T>();
+        }
+
+        /// <summary>
+        /// Set lại thông tin công ty (nếu có) cho entity sau khi build các thông tin khác thành công
+        /// </summary>
+        /// <param name="entity">Thực thể đang build</param>
+        /// CreatedBy: NVMANH (12/12/2020)
         private void SetOrgId(object entity)
         {
             var orgIdProperty = entity.GetType().GetProperty("OrganizationId", BindingFlags.IgnoreCase | BindingFlags.Instance | BindingFlags.Public);
@@ -170,22 +199,13 @@ namespace MISA.ImportDemo.Core.Services
             if (orgIdProperty != null && organization != null)
                 orgIdProperty.SetValue(entity, organization.OrganizationId);
         }
-        /// <summary>
-        /// Thực hiện khởi tạo các giá trị cần thiết trước khi mapping dữ liệu (VD: gán ID của master)
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <returns></returns>
-        protected virtual dynamic InstanceEntityBeforeMappingData<T>() where T : BaseEntity
-        {
-            return Activator.CreateInstance<T>();
-        }
 
         /// <summary>
         /// Hàm xử lý sau khi build được object
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="entity"></param>
-        /// <returns></returns>
+        /// <typeparam name="T">Kiểu của đối tượng (VD: Employee)</typeparam>
+        /// <param name="entity">thực thể đang dựng</param>
+        /// CreatedBy: NVMANH (12/12/2020)
         protected virtual void ProcessDataAfterBuild<T>(object entity) where T : BaseEntity
         {
             // Trên Excel phải nhập ít nhất 1 ô dữ liệu - nếu không nhập ô nào thì coi như đó là dòng trống
@@ -197,18 +217,24 @@ namespace MISA.ImportDemo.Core.Services
                     _entitiesFromEXCEL.Add(entity);
             }
         }
+
         /// <summary>
-        /// Build object theo dữ liệu từng dòng
+        /// Build object theo dữ liệu từng dòng.
+        /// Cơ chế:  - Đọc từng ô ở trong các dòng, 
+        ///          - Mỗi ô dữ liệu đọc được sẽ phân tích các thông tin (giá trị/ kiểu dữ liệu...) 
+        ///          - Thực hiện xử lý dữ liệu đó và gán lại giá trị cho property tương ứng của thực thể
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="worksheet"></param>
-        /// <param name="rangeHeader"></param>
+        /// <param name="worksheet">Sheet dữ liệu đang đọc</param>
+        /// <param name="rangeHeader">Khung chứa dữ liệu của tiêu đề</param>
         /// <param name="listColumnsTemplate">danh sách mô tả các cột dữ liệu trong Database</param>
         /// <param name="totalColumns">Tổng số cột dữ liệu trong tệp nhập khẩu</param>
         /// <param name="rowIndex">Vị trí dòng hiện tại</param>
         /// <param name="entitiesInFile">List các đối tượng đã được build từ tệp nhập khẩu</param>
+        /// CreatedBy: NVMANH (25/12/2020)
         protected object BuildObject<T>(ExcelWorksheet worksheet, ExcelRange rangeHeader, ICollection<ImportColumn> listColumnsTemplate, int totalColumns, int rowIndex, List<T> entitiesInFile = null) where T : BaseEntity
         {
+            // Đầu tiên là cứ khởi tạo object với các thông tin mặc định (trống/ null hoặc gán mặc định từ hàm khởi tạo)
             var entity = InstanceEntityBeforeMappingData<T>();
             for (int columnIndex = 1; columnIndex <= totalColumns; columnIndex++)
             {
@@ -365,7 +391,7 @@ namespace MISA.ImportDemo.Core.Services
         /// </summary>
         /// <param name="objectReferenceName">Tên bảng trong CSDL được tham chiếu đến</param>
         /// <param name="cellValue">Giá trị của cell</param>
-        /// CreatedBy: NVMANH (06/06/2020)
+        /// CreatedBy: NVMANH (12/12/2020)
         protected virtual void ProcessCellValueByDataTypeWhenTableReference<T>(dynamic entity, ref object cellValue, ImportColumn importColumn) where T : BaseEntity
         {
             var value = cellValue.ToString().Trim();
@@ -524,11 +550,11 @@ namespace MISA.ImportDemo.Core.Services
         /// <summary>
         /// Set giá trị cho cell theo thông tin cột dữ liệu nhập khẩu được khai báo trong db
         /// </summary>
-        /// <typeparam name="Y"></typeparam>
-        /// <param name="entity"></param>
-        /// <param name="columnInsert"></param>
-        /// <param name="cellValue"></param>
-        /// CreatedBy: NVMANH (06/06/2020)
+        /// <typeparam name="Y">Kiểu của đối tượng</typeparam>
+        /// <param name="entity">thực thể đang build từ 1 dòng trong file excel</param>
+        /// <param name="columnInsert">Thông tin cột đang nhập khẩu</param>
+        /// <param name="cellValue">Giá trị ô trong file excel đang đọc được</param>
+        /// CreatedBy: NVMANH (12/12/2020)
         private void SetCellValueByColumnInsertWhenTableReference<Y>(Y objectReference, string columnInsert, ref object cellValue)
         {
             var propertyByColumnInsert = objectReference.GetType().GetProperty(columnInsert ?? string.Empty, BindingFlags.IgnoreCase | BindingFlags.Instance | BindingFlags.Public);
@@ -536,11 +562,29 @@ namespace MISA.ImportDemo.Core.Services
                 cellValue = propertyByColumnInsert.GetValue(objectReference);
         }
 
+        /// <summary>
+        /// Hàm tùy chỉnh theo nhu cầu khi muốn custom lại giá trị đọc được từ ô excel với kiểu được map tương ứng trong database là Enum
+        /// </summary>
+        /// <typeparam name="Y">Kiểu của đối tượng</typeparam>
+        /// <param name="entity">thực thể đang build từ 1 dòng trong file excel</param>
+        /// <param name="enumType">Kiểu enum (VD Gender)</param>
+        /// <param name="columnInsert">Thông tin cột đang nhập khẩu</param>
+        /// <param name="cellValue">Giá trị ô trong file excel đang đọc được</param>
+        /// CreatedBy: NVMANH (12/12/2020)
         protected virtual void CustomAfterSetCellValueByColumnInsertWhenEnumReference<Y>(object entity, Y enumType, string columnInsert, ref object cellValue)
         {
 
         }
 
+
+        /// <summary>
+        /// Hàm tùy chỉnh theo nhu cầu khi muốn custom lại giá trị đọc được từ ô excel với khi giá trị được chọn thuộc 1 list trong danh mục được lưu trữ ở Database
+        /// </summary>
+        /// <typeparam name="Y">Kiểu của đối tượng</typeparam>
+        /// <param name="entity">thực thể đang build từ 1 dòng trong file excel</param>
+        /// <param name="columnInsert">Thông tin cột đang nhập khẩu</param>
+        /// <param name="cellValue">Giá trị ô trong file excel đang đọc được</param>
+        /// CreatedBy: NVMANH (12/12/2020)
         protected virtual void CustomAfterSetCellValueByColumnInsertWhenTableReference<Y>(object entity, Y objectReference, string columnInsert, ref object cellValue)
         {
 
@@ -594,7 +638,7 @@ namespace MISA.ImportDemo.Core.Services
         /// <param name="cellValue">Giá trị của cell</param>
         /// <param name="type">Kiểu dữ liệu</param>
         /// <param name="importColumn">Thông tin cột import được khai báo trong Db</param>
-        /// <returns></returns>
+        /// <returns>giá trị ngày tháng được chuyển đổi tương ứng</returns>
         /// CreatedBy: NVMANH (25/05/2020)
         protected virtual DateTime? GetProcessDateTimeValue<T>(T entity, object cellValue, Type type, ImportColumn importColumn = null) where T : BaseEntity
         {
@@ -635,7 +679,7 @@ namespace MISA.ImportDemo.Core.Services
         /// Hàm chuyển các ký tự unicode thành ký tự không dấu, viết liền và viết thường (mục đích để compare gần đúng 2 chuỗi ký tự)
         /// </summary>
         /// <param name="text">Chuỗi ký tự</param>
-        /// <returns></returns>
+        /// <returns>Chuỗi ký tự đã loại bỏ dấu và lowercase - phục vụ check map tương đối nội dung của text</returns>
         /// CreatedBy: NVMANH (23/04/2020)
         private string RemoveDiacritics(string text)
         {
@@ -646,6 +690,6 @@ namespace MISA.ImportDemo.Core.Services
               ).Normalize(NormalizationForm.FormC);
             return newText.Replace(" ", string.Empty).ToLower();
         }
-
+        #endregion
     }
 }

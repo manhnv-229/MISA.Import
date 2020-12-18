@@ -8,6 +8,10 @@ using System.Threading.Tasks;
 
 namespace MISA.ImportDemo.Core.Interfaces
 {
+    /// <summary>
+    /// Khai báo các hàm sử dụng cần thiết riêng cho service nhập khẩu nhân viên
+    /// </summary>
+    /// CreatedBy: NVMANH (10/12/2020)
     public interface IImportEmployeeService: IImportService
     {
         /// <summary>

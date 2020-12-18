@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace MISA.ImportDemo.Infrastructure.Data.Repositories
 {
+    /// <summary>
+    /// Repository cho Nhân viên
+    /// </summary>
     public class EmployeeRepository : BaseRepository<Employee>, IEmployeeRepository
     {
         public Task<IEnumerable<Employee>> GetEmployeeByFilter(object[] filter)

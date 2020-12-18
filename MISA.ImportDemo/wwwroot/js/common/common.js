@@ -64,3 +64,20 @@ var delayFunction = (function () {
         }
     }
 }());
+
+var commonJs = {
+    showLoading: function () {
+        var html = `<div class="m-loading" style="display: none;">
+                        <div class="loading-modal"></div>
+                        <div class="loading-icon"></div>
+                    </div>`;
+        var loadingEl = $('.m-loading');
+        if (loadingEl.length == 0) {
+            $('body').append(html);
+        }
+        $('.m-loading').show();
+    },
+    hideLoading: function () {
+        $('.m-loading').hide();
+    }
+}

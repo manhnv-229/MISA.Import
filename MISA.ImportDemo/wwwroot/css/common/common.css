@@ -97,8 +97,8 @@ input[required]::after {
 input.border-red{
     border: 1px solid #FF4747;
 }
-.loading{
-    display: none;
+.m-loading {
+    display: block;
 }
 .loading-modal{
     position: fixed;

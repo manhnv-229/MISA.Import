@@ -17,21 +17,30 @@ using System.Threading.Tasks;
 
 namespace MISA.ImportDemo.Infrastructure.Data.Repositories
 {
+    /// <summary>
+    /// Repository phục vụ nhập khẩu nhân viên
+    /// </summary>
+    /// CreatedBy: NVMANH (12/12/2020)
     public class ImportEmployeeRepository : BaseImportRepository, IImportEmployeeRepository
     {
 
+        #region CONSTRUCTOR
         public ImportEmployeeRepository(IEntityRepository entityRepository, IMemoryCache importMemoryCache) : base(entityRepository, importMemoryCache)
         {
 
         }
 
+        #endregion
+
+        #region Method
         /// <summary>
         /// Thực hiện nhập khẩu nhân viên
         /// </summary>
-        /// <param name="importKey"></param>
-        /// <param name="overriderData"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <param name="keyImport">Key xác định lấy dữ liệu để nhập khẩu từ cache</param>
+        /// <param name="overriderData">Có cho phép ghi đè hay không (true- ghi đè dữ liệu trùng lặp trong db)</param>
+        /// <param name="cancellationToken">Tham số tùy chọn xử lý đa luồng (hiện tại chưa sử dụng)</param>
+        /// <returns>ActionServiceResult(với các thông tin tương ứng tùy thuộc kết nhập khẩu)</returns>
+        /// CreatedBy: NVMANH (10/10/2020)
         public override async Task<ActionServiceResult> Import(string importKey, bool overriderData, CancellationToken cancellationToken)
         {
             var employees = ((List<Employee>)CacheGet(importKey)).Where(e => e.ImportValidState == ImportValidState.Valid || (overriderData && e.ImportValidState == ImportValidState.DuplicateInDb)).ToList(); ;
@@ -60,6 +69,11 @@ namespace MISA.ImportDemo.Infrastructure.Data.Repositories
             return new ActionServiceResult(true, Resources.Msg_ImportSuccess, MISACode.Success, employees);
         }
 
+        /// <summary>
+        /// Lấy toàn bộ danh sách nhân viên theo công ty
+        /// </summary>
+        /// <returns>Danh sách nhân viên đang có trong công ty</returns>
+        /// CreatedBy: NVMANH (12/12/2020)
         public async Task<List<Employee>> GetEmployees()
         {
             var currentOrganizationId = CommonUtility.GetCurrentOrganizationId();
@@ -67,5 +81,6 @@ namespace MISA.ImportDemo.Infrastructure.Data.Repositories
             var employees = await dbContext.Employee.Where(e => e.OrganizationId == currentOrganizationId).ToListAsync();
             return employees;
         }
+        #endregion
     }
 }
