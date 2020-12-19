@@ -51,6 +51,7 @@ class EmployeeJS extends BaseJS {
             }
             var fdata = new FormData();
             fdata.append("fileImport", files[0]);
+            $('table tbody').empty();
             commonJs.showLoading();
             $.ajax({
                 url: "/api/v1/importemployees/reader",
@@ -62,9 +63,9 @@ class EmployeeJS extends BaseJS {
                 if (res) {
                     var data = res.Data.ImportData;
                     me.buildTableHTML(data);
-                    $('.loading').hide();
                 }
                 commonJs.hideLoading();
+                $('#fileImportInput').val(null);
                 console.log(res);
             }).fail(function (res) {
                 console.log(res);

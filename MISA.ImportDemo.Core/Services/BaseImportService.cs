@@ -374,12 +374,7 @@ namespace MISA.ImportDemo.Core.Services
                             cellValue = GetProcessDateTimeValue(entity, cellValue, propertyType, importColumnTemplate);
                         else
                         {
-
-                            //cellValue = Nullable.GetUnderlyingType(propertyType) == null ? cellValue : Convert.ChangeType(cellValue, Nullable.GetUnderlyingType(propertyType));
-
-                            // TODO: Exception Erro:
                             cellValue = Convert.ChangeType(cellValue, Nullable.GetUnderlyingType(propertyType));
-                            //property.SetValue(entity, cellValue);
                         }
                     }
                     break;
