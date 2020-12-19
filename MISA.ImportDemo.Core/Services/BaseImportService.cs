@@ -239,6 +239,7 @@ namespace MISA.ImportDemo.Core.Services
             for (int columnIndex = 1; columnIndex <= totalColumns; columnIndex++)
             {
                 var headerName = rangeHeader[1, columnIndex].Value.ToString().Replace("\n", " ");
+                Console.WriteLine(headerName);
                 var headerNameRemoveDiacritics = RemoveDiacritics(headerName);
                 var importColumnTemplate = listColumnsTemplate.Where(col => RemoveDiacritics(col.ColumnTitle).Contains(headerNameRemoveDiacritics) && columnIndex == col.ColumnPosition).FirstOrDefault();
                 var address = rangeHeader[1, columnIndex].Address;
