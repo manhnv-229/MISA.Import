@@ -68,7 +68,7 @@ namespace MISA.ImportDemo.Core.Services
         /// </summary>
         /// <param name="importFile">File nhập khẩu</param>
         /// <param name="cancellationToken"></param>
-        /// <returns></returns>
+        /// <returns>List các nhân viên được đọc thành công từ tệp nhập khẩu</returns>
         /// CreatedBy: NVMANH (20/05/2020)
         public async Task<List<T>> ReadDataFromExcel<T>(IFormFile importFile, CancellationToken cancellationToken) where T : BaseEntity
         {
@@ -487,7 +487,6 @@ namespace MISA.ImportDemo.Core.Services
                     SetCellValueByColumnInsertWhenTableReference(position, columnInsert, ref cellValue);
                     var positionIdProperty = entity.GetType().GetProperty("PositionId");
                     var positionCodeProperty = entity.GetType().GetProperty("PositionCode");
-                    var positionNameProperty = entity.GetType().GetProperty("PositionName");
 
                     if (positionIdProperty != null)
                         positionIdProperty.SetValue(entity, position.PositionId);
@@ -495,8 +494,6 @@ namespace MISA.ImportDemo.Core.Services
                     if (positionCodeProperty != null)
                         positionCodeProperty.SetValue(entity, position.PositionCode);
 
-                    if (positionNameProperty != null)
-                        positionNameProperty.SetValue(entity, position.PositionName);
                     break;
                 default:
                     var listData = _importRepository.GetListObjectByTableName(objectReferenceName).Result;
