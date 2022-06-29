@@ -396,7 +396,7 @@ namespace MISA.ImportDemo.Core.Services
             object objectReference = null;
             switch (objectReferenceName)
             {
-                case "Nationality":
+                case "Nationality":// Quốc tịch
                     var nationality = Nationalities.Where(n => n.NationalityName == value.ToString().Trim()).FirstOrDefault();
                     if (nationality == null)
                         cellValue = null;
@@ -421,7 +421,7 @@ namespace MISA.ImportDemo.Core.Services
                             nationalityIdProperty.SetValue(entity, nationality.NationalityId);
                     }
                     break;
-                case "Relation":
+                case "Relation":// Quan hệ
                     var relation = Relations.Where(n => n.RelationName == value.ToString().Trim()).FirstOrDefault();
                     if (relation == null)
                         cellValue = null;
@@ -445,7 +445,7 @@ namespace MISA.ImportDemo.Core.Services
                     }
 
                     break;
-                case "Ethnic":
+                case "Ethnic":// Dân tộc
                     var ethnic = Ethnics.Where(n => n.EthnicName == value.ToString().Trim()).FirstOrDefault();
                     if (ethnic == null)
                         cellValue = null;
@@ -468,9 +468,10 @@ namespace MISA.ImportDemo.Core.Services
                             ethnicNameProperty.SetValue(entity, ethnic.EthnicName);
                     }
                     break;
-                case "Position":
+                case "Position":// Vị trí/ chức vụ
                     var position = Positions.Where(n => n.PositionName.ToLower() == value.ToString().Trim().ToLower()).FirstOrDefault();
-                    // Nếu không có vị trí tương ứng thì thực hiện thêm mới vị trí này:
+                    // Nếu không có vị trí tương ứng thì thực hiện thêm mới vị trí này (không phải thêm ngay vào db mà đánh dấu để thực hiện thêm sau khi người dùng xác nhận nhập khẩu):
+                    // Cơ chế là khởi tạo và add đối tượng mới này vào 1 list và thực hiện lưu lại, sau khi gửi 1 respoonse về cho người dùng xác nhận nhập khẩu thì sẽ thêm vị trí này ở bước sau:
                     if (position == null)
                     {
                         position = new Position()
@@ -495,7 +496,7 @@ namespace MISA.ImportDemo.Core.Services
                         positionCodeProperty.SetValue(entity, position.PositionCode);
 
                     break;
-                default:
+                default:// Khác
                     var listData = _importRepository.GetListObjectByTableName(objectReferenceName).Result;
                     var iDPropertyName = String.Format("{0}Id", objectReferenceName);
                     var namePropertyName = String.Format("{0}Name", objectReferenceName);

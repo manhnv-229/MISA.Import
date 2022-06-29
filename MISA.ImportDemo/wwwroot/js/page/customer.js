@@ -19,7 +19,7 @@ class CustomerJS extends BaseJS {
     }
 
     setApiRouter() {
-        this.apiRouter = "/api/v1/customers";
+        this.apiRouter = "https://localhost:44389/api/v1/Customers";
     }
 }
 

@@ -113,7 +113,7 @@ namespace MISA.ImportDemo
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "MISA iVAN Service version 1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "MISA CUKCUK Service version 1");
                 c.RoutePrefix = "swagger";
             });
             if (env.IsDevelopment())
@@ -123,7 +123,7 @@ namespace MISA.ImportDemo
 
             app.UseSession();
             app.UseStaticFiles();
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseRouting();
             // global cors policy
             app.UseCors(x => x

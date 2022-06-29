@@ -1,4 +1,4 @@
-﻿
+
 class BaseJS {
     constructor() {
         this.host = "";
@@ -180,6 +180,8 @@ class BaseJS {
      * */
     loadData() {
         var me = this;
+        console.log(me);
+        console.log(me);
         try {
             me.setSubApiEndPoint();
             $('table tbody').empty();
@@ -188,11 +190,11 @@ class BaseJS {
             var getDataUrl = this.getDataUrl;
             $('.loading').show();
             $.ajax({
-                url: me.host + me.apiRouter + me.SubApiRouter,
+                url: 'https://localhost:44389/api/v1/Customers',
                 method: "GET",
                 async: true,
             }).done(function (res) {
-                me.buildTableHTML(res).bind(me);
+                me.buildTableHTML(res);
                
                 $('.loading').hide();
                 $('#tbListData').tableScroll({ height: 150 });
