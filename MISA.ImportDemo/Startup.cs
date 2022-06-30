@@ -47,11 +47,8 @@ namespace MISA.ImportDemo
             DatabaseContext.ConnectionString = Configuration.GetConnectionString("DefaultConnection");
             services.AddMemoryCache();
             services.AddDbContext<EfDbContext>(options => options
-                .UseMySql(EfDbContext.ConnectionString,
-                    mysqlOptions =>
-                        mysqlOptions.ServerVersion(
-                            new ServerVersion(new Version(10, 4, 6), ServerType.MariaDb))
-                        .EnableRetryOnFailure())
+                .UseMySql(EfDbContext.ConnectionString, ServerVersion.AutoDetect(EfDbContext.ConnectionString))
+                        //.EnableRetryOnFailure()
                 );
 
             services.AddCors();

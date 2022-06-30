@@ -1,7 +1,7 @@
 ﻿using MISA.ImportDemo.Core.Entities;
 using MISA.ImportDemo.Core.Interfaces;
 using MISA.ImportDemo.Infrastructure.UnitOfWork;
-using MySql.Data.MySqlClient;
+//using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Linq;
 using Microsoft.EntityFrameworkCore.Migrations.Operations;
 using MISA.ImportDemo.Core.Enumeration;
+using MySqlConnector;
 
 namespace MISA.ImportDemo.Infrastructure.Data.Repositories
 {

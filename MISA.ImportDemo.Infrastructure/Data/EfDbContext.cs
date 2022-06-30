@@ -35,7 +35,7 @@ namespace MISA.ImportDemo.Infrastructure.Data
         {
             if (!optionsBuilder.IsConfigured)
             {
-                optionsBuilder.UseMySql(ConnectionString, x => x.ServerVersion("10.3.25-mariadb"));
+                optionsBuilder.UseMySql(ConnectionString, ServerVersion.AutoDetect(EfDbContext.ConnectionString));
             }
         }
 

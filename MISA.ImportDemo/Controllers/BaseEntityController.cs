@@ -89,6 +89,7 @@ namespace MISA.ImportDemo.Controllers
             // Validate dữ liệu theo các Attribure Property
             if (!ModelState.IsValid)
             {
+                //TODO: Đang làm đoạn này
                 var resultValidate = new ActionServiceResult()
                 {
                     Success = false,

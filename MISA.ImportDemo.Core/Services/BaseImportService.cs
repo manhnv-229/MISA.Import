@@ -248,6 +248,7 @@ namespace MISA.ImportDemo.Core.Services
                 if (importColumnTemplate == null)
                     continue;
 
+                // TODO: Đang làm đoạn này
                 var dataType = importColumnTemplate.ColumnDataType != null ? (DataType)(importColumnTemplate.ColumnDataType) : DataType.String;
                 var cellValue = worksheet.Cells[rowIndex, columnIndex].Value;
                 CellValueValid(entity, cellValue, importColumnTemplate);

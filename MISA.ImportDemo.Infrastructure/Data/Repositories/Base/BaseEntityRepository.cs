@@ -2,7 +2,8 @@
 using MISA.ImportDemo.Core.Enumeration;
 using MISA.ImportDemo.Core.Interfaces.Base;
 using MISA.Infrastructure;
-using MySql.Data.MySqlClient;
+using MySqlConnector;
+//using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Linq;
