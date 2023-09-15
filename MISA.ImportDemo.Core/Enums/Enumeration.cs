@@ -256,4 +256,283 @@ namespace MISA.ImportDemo.Core.Enumeration
         Unlimitted,
         Other
     }
+
+    /// <summary>
+    /// Loại sắp xếp
+    /// </summary>
+    public enum SortType
+    {
+        /// <summary>
+        /// Tăng dần
+        /// </summary>
+        ASC = 1,
+
+        /// <summary>
+        /// Giảm dần
+        /// </summary>
+        DESC = 2
+    }
+
+    /// <summary>
+    /// Loại lọc dữ liệu
+    /// </summary>
+    public enum FilterType
+    {
+        /// <summary>
+        /// Chứa
+        /// </summary>
+        Containt = 1,
+
+        /// <summary>
+        /// Không chứa
+        /// </summary>
+        NotContaint = 2,
+
+        /// <summary>
+        /// Bắt đầu với
+        /// </summary>
+        StartWith = 3,
+
+        /// <summary>
+        /// Kết thúc với
+        /// </summary>
+        EndWith = 4,
+
+        /// <summary>
+        /// Bằng
+        /// </summary>
+        Equal = 5,
+
+        /// <summary>
+        /// Không bằng
+        /// </summary>
+        NotEqual = 6
+    }
+
+    public enum MSRole
+    {
+        Administrator = 1, // Quản trị
+        Management = 5, // Quản lý
+        Employee = 10, // Nhân viên
+        Teacher = 15, // Giáo viên, Giảng viên
+        Advisor = 20, // Quản lý nhóm
+        HRIntern = 21, // Intern nhân sự
+        Fresher = 25, // Fresher
+        Intern = 30, // Intert lập trình
+        Newbie = 35, // Thành viên mới
+    }
+
+    /// <summary>
+    /// Trạng thái của Entity
+    /// </summary>
+    public enum MISAEntityState
+    {
+        /// <summary>
+        /// Thêm mới
+        /// </summary>
+        AddNew = 1,
+
+        /// <summary>
+        /// Cập nhật
+        /// </summary>
+        Update = 2,
+
+        DELETE = 3,
+    }
+
+    /// <summary>
+    /// Tình trạng hôn nhân
+    /// </summary>
+    public enum MaritalStatus
+    {
+        /// <summary>
+        /// Độc thân
+        /// </summary>
+        Single = 1,
+
+        /// <summary>
+        /// Đã đính hôn
+        /// </summary>
+        Engaged = 2,
+
+        /// <summary>
+        /// Đã kết hôn
+        /// </summary>
+        Married = 3,
+
+        /// <summary>
+        /// Ly thân
+        /// </summary>
+        Separated = 4,
+
+        /// <summary>
+        /// Ly hôn
+        /// </summary>
+        Divorced = 5,
+
+        /// <summary>
+        /// Góa phụ/ Góa chông
+        /// </summary>
+        Widow = 6,
+
+        /// <summary>
+        /// Góa vợ
+        /// </summary>
+        Widower = 7
+    }
+
+    /// <summary>
+    /// Tình trạng công việc
+    /// </summary>
+    public enum WorkStatus
+    {
+        /// <summary>
+        /// Đang làm việc
+        /// </summary>
+        Working = 1,
+
+        /// <summary>
+        /// Đang học việc
+        /// </summary>
+        Trainning = 2,
+
+        /// <summary>
+        /// Đang thử việc
+        /// </summary>
+        Probationary = 3,
+
+        /// <summary>
+        /// Đã nghỉ việc
+        /// </summary>
+        QuitWork = 4,
+
+        /// <summary>
+        /// Đã nghỉ hưu
+        /// </summary>
+        Retired = 5
+    }
+
+    /// <summary>
+    /// Bậc đào tạo
+    /// </summary>
+    public enum TrainningLevel
+    {
+        /// <summary>
+        /// Cao học
+        /// </summary>
+        Master = 1,
+
+        /// <summary>
+        /// Đại học
+        /// </summary>
+        Bachelor = 2,
+
+        /// <summary>
+        /// Nghiên cứu sinh
+        /// </summary>
+        PhilosophyDoctor = 3,
+
+        /// <summary>
+        /// Cao đẳng
+        /// </summary>
+        Diploma = 4,
+
+        /// <summary>
+        /// Trung cấp
+        /// </summary>
+        IntermediateProfessionalEducation = 5
+    }
+
+    /// <summary>
+    /// Xếp loại bằng tốt nghiệp
+    /// </summary>
+    public enum DegreeClassification
+    {
+        /// <summary>
+        /// Xuất sắc
+        /// </summary>
+        Excellent = 1,
+
+        /// <summary>
+        /// Giỏi
+        /// </summary>
+        VeryGood = 2,
+
+        /// <summary>
+        /// Khá
+        /// </summary>
+        Good = 3,
+
+        /// <summary>
+        /// Trung bình/ Khá
+        /// </summary>
+        AverageGood = 4,
+
+        /// <summary>
+        /// Trung bình
+        /// </summary>
+        Ordinary = 5
+    }
+
+    public enum TokenLimitTime
+    {
+        Day = 1,
+        Hour = 2,
+        Minute = 3,
+        Second = 4
+    }
+
+    public enum MessageGroupType
+    {
+        Private = 1,
+        Group = 2,
+        Public = 3
+    }
+
+    public enum ExerciseType
+    {
+        Constructed = 1,
+        Selected = 2
+    }
+
+    public enum QuestionType
+    {
+        /// <summary>
+        /// tự nhập
+        /// </summary>
+        Constructed = 1,
+
+        /// <summary>
+        /// Chọn 1
+        /// </summary>
+        OneSelected = 2,
+
+        /// <summary>
+        /// Chọn nhiều đáp án
+        /// </summary>
+        MultiSelected = 3
+    }
+
+    public enum ReactionType
+    {
+        UnReaction = 0,
+        Like = 1,
+        Unlike = 2,
+        Heart = 3
+    }
+    public enum VideoType
+    {
+        YoutubeId = 0,
+        UrlCustom = 1,
+        Upload = 2
+    }
+
+    public enum ThreadType
+    {
+        Discuss = 0,
+        Question = 1,
+        Shared = 2,
+        Notice = 3,
+        Other = 10
+    }
 }
